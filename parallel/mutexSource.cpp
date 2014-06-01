@@ -2,7 +2,7 @@
 
 void Peterson_Lock::lock(){
 	int TID = omp_get_thread_num();
-	InterlockedExchange(flag+TID, 1);
+	InterlockedExchange(flag + TID, 1);
 	InterlockedExchange(&vict, TID);
 
 	while (flag[1 - TID] && vict == TID);
@@ -17,7 +17,7 @@ void Peterson_Lock::unlock(){
 Filter_Lock::Filter_Lock(int threadNumb) : criticalSection(threadNumb){
 	victim = new long[threadNumb];
 	levelId = new long[threadNumb];
-	for (size_t i = 0; i<threadNumb-1; ++i){
+	for (size_t i = 0; i < threadNumb - 1; ++i){
 		levelId[i] = -1;
 		victim[i] = -1;
 	}
@@ -29,7 +29,7 @@ Filter_Lock::~Filter_Lock(){
 }
 void Filter_Lock::lock(){
 	int threadId = omp_get_thread_num();
-	for (int i = 0; i<threadCount-1; ++i){
+	for (int i = 0; i < threadCount - 1; ++i){
 		InterlockedExchange(levelId + threadId, i);
 		InterlockedExchange(victim + i, threadId);
 		volatile long flag = true;
@@ -64,13 +64,13 @@ Lamport::~Lamport(){
 
 void Lamport::lock(){
 	int i = omp_get_thread_num();
-	InterlockedExchange(choosen + i, 1);	
+	InterlockedExchange(choosen + i, 1);
 	for (int j = 0; j < threadCount; ++j){
 		if (number[j] >= number[i]){
-			InterlockedExchange(number + i, number[j]); 
+			InterlockedExchange(number + i, number[j]);
 		}
 	}
-	InterlockedIncrement(number + i); 
+	InterlockedIncrement(number + i);
 	InterlockedExchange(choosen + i, 0);
 
 	for (int j = 0; j < threadCount; ++j){
@@ -85,10 +85,10 @@ void Lamport::unlock(){
 
 //-----------------------
 
-TAS::TAS(){ flag = 0;}
+TAS::TAS(){ flag = 0; }
 
 void TAS::lock(){
-	while(InterlockedExchange(&flag, 1));
+	while (InterlockedExchange(&flag, 1));
 }
 
 void TAS::unlock(){
@@ -97,7 +97,7 @@ void TAS::unlock(){
 
 //-----------------------
 
-TTAS::TTAS(){ flag = 0;}
+TTAS::TTAS(){ flag = 0; }
 
 void TTAS::lock(){
 	for (;;){
@@ -105,8 +105,8 @@ void TTAS::lock(){
 	}
 }
 
-void TTAS::unlock(){ 
-	flag = 0; 
+void TTAS::unlock(){
+	flag = 0;
 }
 
 //-----------------------
@@ -176,15 +176,16 @@ void SysLock_SpinCount::unlock(){
 
 
 void initializeCSTest(std::vector<criticalSection*>& obj, int threadCount){
-	if (threadCount == 2){
-		obj.push_back(new Peterson_Lock);
-	}
-	obj.push_back(new Lamport(threadCount));
-	obj.push_back(new Filter_Lock(threadCount));
-	obj.push_back(new Query_Lock(threadCount));
-	obj.push_back(new TAS);
-	obj.push_back(new TTAS);
-	obj.push_back(new SysLock);
-	obj.push_back(new SysLock_SpinCount(100));
-	obj.push_back(new SysLock_SpinCount(5000));
+//	if (threadCount == 2){
+//		obj.push_back(new Peterson_Lock);
+//	}
+	//obj.push_back(new Lamport(threadCount));
+	//obj.push_back(new Filter_Lock(threadCount));
+	//obj.push_back(new Query_Lock(threadCount));
+	//obj.push_back(new TAS);
+	//obj.push_back(new TTAS);
+	//obj.push_back(new SysLock);
+	obj.push_back(new SysLock_SpinCount(10));
+	obj.push_back(new SysLock_SpinCount(500000));
+	obj.push_back(new SysLock_SpinCount(10000000000));
 }

@@ -1,6 +1,6 @@
 #include "mutexHeader.h"
 
-#define THREADNUMB 4
+#define THREADNUMB 2
 
 double difficult(){
 	return log(log(log(log(log(log(log(log(log(log(log(log(20480000.0)))) + 3) + 3) + 3) + 3) + 3) + 3) + 3) + 3); // 4607
@@ -10,7 +10,6 @@ void main(int args, char* argv[]){
 	omp_set_num_threads(THREADNUMB);
 	std::vector <criticalSection*> test;
 	initializeCSTest(test, THREADNUMB);
-	criticalSection *t = new Filter_Lock(THREADNUMB);
 
 	// все работает ок, только lamport-работает слишком долго
 
@@ -27,7 +26,8 @@ void main(int args, char* argv[]){
 
 		}
 		unsigned long z = GetTickCount();
-		printf("%s workTime:%lu + (%f)\n", typeid(*cs).name(), z - a, loggSumm);
+		printf("%s workTime:%lu(%ut) + (%f)\n", typeid(*cs).name(), z - a, THREADNUMB, loggSumm);
 	}
+
 	test.clear(); // здесь память не освобождается, надо делать освобождение явно
 }

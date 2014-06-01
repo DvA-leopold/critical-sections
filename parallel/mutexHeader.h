@@ -8,7 +8,7 @@
 #include <vector>
 #include <typeinfo>
 
-class criticalSection {
+class criticalSection abstract {
 public:
 	criticalSection() :criticalSection(0){}
 	criticalSection(const int t) : threadCount(t){}
@@ -100,7 +100,6 @@ public:
 
 private:
 	CRITICAL_SECTION c_s;
-
 };
 class SysLock_SpinCount : public criticalSection {
 public:
