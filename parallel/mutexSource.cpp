@@ -65,17 +65,18 @@ Lamport::~Lamport(){
 void Lamport::lock(){
 	int i = omp_get_thread_num();
 	InterlockedExchange(choosen + i, 1);
+	unsigned t = 0;
 	for (int j = 0; j < threadCount; ++j){
-		if (number[j] >= number[i]){
-			InterlockedExchange(number + i, number[j]);
+		if (t<number[j]){
+			t = number[j];
 		}
 	}
-	InterlockedIncrement(number + i);
+	InterlockedExchange(number + i, t + 1);
 	InterlockedExchange(choosen + i, 0);
 
 	for (int j = 0; j < threadCount; ++j){
 		while (choosen[j]);
-		while ((number[j] != 0) && ((number[j] < number[i]) || ((number[j] == number[i]) && (j < i))));
+		while (number[j] && ((number[j] < number[i]) || ((number[j] == number[i]) && (j < i))));
 	}
 }
 
@@ -179,13 +180,13 @@ void initializeCSTest(std::vector<criticalSection*>& obj, int threadCount){
 //	if (threadCount == 2){
 //		obj.push_back(new Peterson_Lock);
 //	}
-	//obj.push_back(new Lamport(threadCount));
+	obj.push_back(new Lamport(threadCount));
 	//obj.push_back(new Filter_Lock(threadCount));
 	//obj.push_back(new Query_Lock(threadCount));
 	//obj.push_back(new TAS);
 	//obj.push_back(new TTAS);
 	//obj.push_back(new SysLock);
-	obj.push_back(new SysLock_SpinCount(10));
-	obj.push_back(new SysLock_SpinCount(500000));
-	obj.push_back(new SysLock_SpinCount(10000000000));
+	//obj.push_back(new SysLock_SpinCount(10));
+	//obj.push_back(new SysLock_SpinCount(500000));
+	//obj.push_back(new SysLock_SpinCount(10000000000));
 }

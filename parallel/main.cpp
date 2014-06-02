@@ -1,6 +1,6 @@
 #include "mutexHeader.h"
 
-#define THREADNUMB 2
+#define THREADNUMB 4
 
 double difficult(){
 	return log(log(log(log(log(log(log(log(log(log(log(log(20480000.0)))) + 3) + 3) + 3) + 3) + 3) + 3) + 3) + 3); // 4607
@@ -11,7 +11,7 @@ void main(int args, char* argv[]){
 	std::vector <criticalSection*> test;
 	initializeCSTest(test, THREADNUMB);
 
-	// все работает ок, только lamport-работает слишком долго
+	// все работает ок
 
 	for (auto cs : test){
 		double loggSumm = 0;
