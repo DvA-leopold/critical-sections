@@ -112,7 +112,7 @@ void TTAS::unlock(){
 
 //-----------------------
 
-Query_Lock::Query_Lock(int threadNumb) : criticalSection(threadNumb){
+Queue_Lock::Queue_Lock(int threadNumb) : criticalSection(threadNumb){
 	idx = 0;
 	available = new long[threadNumb];
 	available[idx] = true;
@@ -122,18 +122,18 @@ Query_Lock::Query_Lock(int threadNumb) : criticalSection(threadNumb){
 	my_idx = new unsigned[threadNumb];
 }
 
-Query_Lock::~Query_Lock(){
+Queue_Lock::~Queue_Lock(){
 	delete[] available;
 	delete[] my_idx;
 }
 
-void Query_Lock::lock(){
+void Queue_Lock::lock(){
 	int TID = omp_get_thread_num();
 	int i = my_idx[TID] = (InterlockedIncrement(&idx) - 1) % threadCount;
 	while (!available[i]);
 }
 
-void Query_Lock::unlock(){
+void Queue_Lock::unlock(){
 	int TID = omp_get_thread_num();
 	InterlockedExchange(available + my_idx[TID], 0);
 	InterlockedExchange(available + ((my_idx[TID] + 1) % threadCount), 1);
@@ -182,7 +182,7 @@ void initializeCSTest(std::vector<criticalSection*>& obj, int threadCount){
 //	}
 	obj.push_back(new Lamport(threadCount));
 	//obj.push_back(new Filter_Lock(threadCount));
-	//obj.push_back(new Query_Lock(threadCount));
+	//obj.push_back(new Queue_Lock(threadCount));
 	//obj.push_back(new TAS);
 	//obj.push_back(new TTAS);
 	//obj.push_back(new SysLock);

@@ -72,15 +72,14 @@ public:
 	TTAS();
 	void lock();
 	void unlock();	
-	void printName();
 
 private:
 	unsigned flag;
 };
-class Query_Lock : public criticalSection {
+class Queue_Lock : public criticalSection {
 public:
-	Query_Lock(int);
-	~Query_Lock();
+	Queue_Lock(int);
+	~Queue_Lock();
 	void lock();
 	void unlock();
 
